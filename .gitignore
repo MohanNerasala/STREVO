@@ -1,0 +1,22 @@
+# Frontend / Node
+node_modules/
+dist/
+.env
+.DS_Store
+
+# Backend / Java / Spring Boot
+target/
+*.class
+*.jar
+*.war
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Logs
+*.log
