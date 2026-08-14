@@ -31,7 +31,7 @@ const Register = () => {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data));
         }
-        navigate('/'); // Redirect to home on success
+        window.location.href = '/'; // Redirect with full reload to update Navbar
       } else {
         // Backend returns plain string error sometimes based on AuthController
         const errorText = await response.text().catch(() => 'Registration failed.');

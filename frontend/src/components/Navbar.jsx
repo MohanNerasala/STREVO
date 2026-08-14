@@ -7,7 +7,7 @@ const Navbar = () => {
 
   // In a real app, you would fetch cart count and user state from Context/Redux
   const cartCount = 0;
-  const isLoggedIn = false;
+  const isLoggedIn = !!localStorage.getItem('token');
 
   return (
     <nav className="navbar">
@@ -53,9 +53,15 @@ const Navbar = () => {
             <ShoppingBag size={20} />
             {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
           </Link>
-          <Link to="/login" className="nav-login">
-            <User size={16} /> {isLoggedIn ? 'Account' : 'Login'}
-          </Link>
+          {isLoggedIn ? (
+            <Link to="/profile" title="Profile">
+              <User size={20} />
+            </Link>
+          ) : (
+            <Link to="/login" className="nav-login" style={{borderRadius: 0}}>
+              <User size={16} /> LOGIN
+            </Link>
+          )}
         </div>
         <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           <Menu size={24} />

@@ -65,11 +65,10 @@ public class AuthController {
 
         userRepository.save(user);
 
-        // Auto login after register
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signUpRequest.getEmail(), signUpRequest.getPassword()));
+        // Auto login after register without re-checking the password hash
+        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String jwt = jwtUtil.generateToken(userDetails);
 
         return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getFullName(), user.getEmail(), user.getRole().name()));
