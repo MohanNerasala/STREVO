@@ -28,6 +28,8 @@ public class User {
 
     private String phone;
 
+    private String avatarUrl;
+
     @Column(nullable = false)
     private String passwordHash;
 

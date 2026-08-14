@@ -18,7 +18,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -28,8 +28,10 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
         localStorage.setItem('user', JSON.stringify(data));
-        window.location.href = '/'; // Redirect with full reload to update Navbar
+        window.dispatchEvent(new Event('authChanged'));
+        navigate('/');
       } else {
         setError(data.message || 'Invalid email or password.');
       }

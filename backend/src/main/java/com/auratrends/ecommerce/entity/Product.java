@@ -39,7 +39,7 @@ public class Product {
     private String imageUrl;
     private Integer stockQuantity;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> sizeOptions;
 
     private String color;

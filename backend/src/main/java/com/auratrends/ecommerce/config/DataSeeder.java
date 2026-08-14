@@ -1,16 +1,22 @@
 package com.auratrends.ecommerce.config;
 
+import com.auratrends.ecommerce.entity.CartItem;
 import com.auratrends.ecommerce.entity.Product;
 import com.auratrends.ecommerce.entity.Role;
 import com.auratrends.ecommerce.entity.User;
+import com.auratrends.ecommerce.entity.WishlistItem;
+import com.auratrends.ecommerce.repository.CartItemRepository;
 import com.auratrends.ecommerce.repository.ProductRepository;
 import com.auratrends.ecommerce.repository.UserRepository;
+import com.auratrends.ecommerce.repository.WishlistItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -22,15 +28,26 @@ public class DataSeeder implements CommandLineRunner {
     private UserRepository userRepository;
 
     @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private WishlistItemRepository wishlistItemRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
-        if (productRepository.count() == 0) {
-            seedProducts();
-        }
+        boolean usersCreated = false;
         if (userRepository.count() == 0) {
             seedUsers();
+            usersCreated = true;
+        }
+        if (productRepository.count() == 0) {
+            seedProducts();
+            if (usersCreated) {
+                seedCartAndWishlist();
+            }
         }
     }
 
@@ -54,287 +71,120 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedProducts() {
-        Product p1 = Product.builder()
-                .name("Slim Fit Casual Shirt")
-                .brand("Aura Trends")
-                .description("Premium cotton slim fit casual shirt for men.")
-                .category("Shirts")
-                .gender("Men")
-                .price(49.99)
-                .discountPercentage(10.0)
-                .imageUrl("https://images.unsplash.com/photo-1596755094514-f87e32f85e23?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(100)
-                .sizeOptions(Arrays.asList("M", "L", "XL"))
-                .rating(4.5)
-                .build();
+        List<Product> products = new ArrayList<>();
 
-        Product p2 = Product.builder()
-                .name("Classic Blue Jeans")
-                .brand("Denim Co")
-                .description("Durable and stylish classic blue jeans.")
-                .category("Pants")
-                .gender("Men")
-                .price(79.99)
-                .discountPercentage(20.0)
-                .imageUrl("https://images.unsplash.com/photo-1542272604-780c8e5015b6?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(150)
-                .sizeOptions(Arrays.asList("30", "32", "34", "36"))
-                .rating(4.8)
-                .build();
+        String[] brands = {"STREVO", "Aura Trends", "UrbanEdge", "Luxe", "District", "Night Grid", "Concrete", "Asphalt", "Metro", "Seoul", "Twinset"};
+        
+        // Define varied images for each category
+        String[] hoodieImages = {
+            "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1578587018452-892bace94f12?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?auto=format&fit=crop&w=800&q=80"
+        };
+        
+        String[] teeImages = {
+            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1618517351616-38fb9c52e047?auto=format&fit=crop&w=800&q=80"
+        };
 
-        Product p3 = Product.builder()
-                .name("Floral Summer Dress")
-                .brand("Luxe")
-                .description("Lightweight floral dress perfect for summer.")
-                .category("Dresses")
-                .gender("Women")
-                .price(59.99)
-                .discountPercentage(15.0)
-                .imageUrl("https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(80)
-                .sizeOptions(Arrays.asList("S", "M", "L"))
-                .rating(4.7)
-                .build();
+        String[] cargoImages = {
+            "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=800&q=80"
+        };
 
-        Product p4 = Product.builder()
-                .name("Elegant Evening Gown")
-                .brand("Aura Trends")
-                .description("Stunning evening gown for special occasions.")
-                .category("Dresses")
-                .gender("Women")
-                .price(129.99)
-                .discountPercentage(0.0)
-                .imageUrl("https://images.unsplash.com/photo-1566160983935-300627788b77?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(30)
-                .sizeOptions(Arrays.asList("S", "M"))
-                .rating(4.9)
-                .build();
+        String[] denimImages = {
+            "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1604176354204-9268737828e4?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80"
+        };
 
-        Product p5 = Product.builder()
-                .name("Kids Graphic T-Shirt")
-                .brand("MiniTrends")
-                .description("Fun and colorful graphic tee for kids.")
-                .category("Shirts")
-                .gender("Kids")
-                .price(19.99)
-                .discountPercentage(5.0)
-                .imageUrl("https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(200)
-                .sizeOptions(Arrays.asList("4Y", "6Y", "8Y"))
-                .rating(4.3)
-                .build();
+        String[] sneakerImages = {
+            "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1552346154-21d32810baa3?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80"
+        };
 
-        Product p6 = Product.builder()
-                .name("Running Sneakers")
-                .brand("Sprint")
-                .description("Lightweight and comfortable running shoes.")
-                .category("Shoes")
-                .gender("Unisex")
-                .price(89.99)
-                .discountPercentage(25.0)
-                .imageUrl("https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(120)
-                .sizeOptions(Arrays.asList("8", "9", "10", "11"))
-                .rating(4.6)
-                .build();
+        // Adjectives and styles to generate unique names
+        String[] colors = {"Black", "Navy", "Charcoal", "Olive", "Light Gray", "Off-White", "Washed Black", "Vintage Blue", "Desert Sand"};
+        String[] hoodieStyles = {"Boxy Hoodie", "Zip-Up Hoodie", "Heavyweight Hoodie", "Oversized Hoodie"};
+        String[] teeStyles = {"Graphic Tee", "Oversized Tee", "Vintage Wash Tee", "Drop Shoulder Tee"};
+        String[] cargoStyles = {"Cargo Pants", "Parachute Pants", "Tactical Trousers", "Utility Pants"};
+        String[] denimStyles = {"Wide Leg Jeans", "Baggy Denim", "Washed Denim", "Skate Jeans"};
+        String[] sneakerStyles = {"Chunky Sneakers", "High-Top Canvas", "Retro Runners", "Court Sneakers"};
 
-        Product p7 = Product.builder()
-                .name("Leather Jacket")
-                .brand("UrbanEdge")
-                .description("Premium faux leather jacket for a bold look.")
-                .category("Jackets")
-                .gender("Men")
-                .price(149.99)
-                .discountPercentage(30.0)
-                .imageUrl("https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(40)
-                .sizeOptions(Arrays.asList("M", "L", "XL"))
-                .rating(4.7)
-                .build();
+        int idCounter = 1;
 
-        Product p8 = Product.builder()
-                .name("Women's Denim Jacket")
-                .brand("Luxe")
-                .description("Classic denim jacket for casual outings.")
-                .category("Jackets")
-                .gender("Women")
-                .price(99.99)
-                .discountPercentage(15.0)
-                .imageUrl("https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(60)
-                .sizeOptions(Arrays.asList("S", "M", "L"))
-                .rating(4.5)
-                .build();
+        // Strictly the 7 categories from the Collections Page Tabs
+        products.addAll(generateProductsForCategory("New Drops", 20, colors, hoodieStyles, brands, hoodieImages, 2000, 4000, idCounter)); idCounter += 20;
+        products.addAll(generateProductsForCategory("Hoodies", 20, colors, hoodieStyles, brands, hoodieImages, 1500, 3500, idCounter)); idCounter += 20;
+        products.addAll(generateProductsForCategory("Tees", 20, colors, teeStyles, brands, teeImages, 800, 1500, idCounter)); idCounter += 20;
+        products.addAll(generateProductsForCategory("Cargos", 20, colors, cargoStyles, brands, cargoImages, 1800, 4000, idCounter)); idCounter += 20;
+        products.addAll(generateProductsForCategory("Denim", 20, colors, denimStyles, brands, denimImages, 2000, 4500, idCounter)); idCounter += 20;
+        products.addAll(generateProductsForCategory("Sneakers", 20, colors, sneakerStyles, brands, sneakerImages, 3000, 8000, idCounter)); idCounter += 20;
+        products.addAll(generateProductsForCategory("Sale", 20, colors, teeStyles, brands, teeImages, 500, 1500, idCounter));
+        
+        productRepository.saveAll(products);
+    }
 
-        Product p9 = Product.builder()
-                .name("Cotton Polo Shirt")
-                .brand("Aura Trends")
-                .description("Breathable cotton polo shirt for everyday wear.")
-                .category("Shirts")
-                .gender("Men")
-                .price(39.99)
-                .discountPercentage(0.0)
-                .imageUrl("https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(180)
-                .sizeOptions(Arrays.asList("S", "M", "L", "XL"))
-                .rating(4.4)
-                .build();
+    private List<Product> generateProductsForCategory(String category, int count, String[] colors, String[] styles, String[] brands, String[] images, int minPrice, int maxPrice, int startId) {
+        List<Product> products = new ArrayList<>();
+        List<String> sizeList = Arrays.asList("S", "M", "L", "XL");
+        
+        for (int i = 0; i < count; i++) {
+            String color = colors[(startId + i) % colors.length];
+            String style = styles[(startId + i) % styles.length];
+            String brand = brands[(startId + i) % brands.length];
+            String image = images[(startId + i) % images.length];
+            
+            // Unique Name Generation
+            String name = brand + " " + color + " " + style + " " + (100 + (startId + i) % 899);
+            
+            double price = minPrice + (Math.random() * (maxPrice - minPrice));
+            price = Math.round(price / 10.0) * 10.0; // Round to nearest 10
+            
+            // 25% chance of being on sale, but 100% chance if in the 'Sale' category
+            double discount = (Math.random() > 0.75 || category.equals("Sale")) ? (10.0 + (Math.round(Math.random() * 4) * 10)) : 0.0; 
+            
+            Product p = Product.builder()
+                    .name(name)
+                    .brand(brand)
+                    .description("Premium streetwear " + style.toLowerCase() + " by " + brand + ". Built for everyday comfort and street style.")
+                    .category(category)
+                    .gender((i % 3 == 0) ? "Women" : (i % 2 == 0) ? "Men" : "Unisex")
+                    .price(price)
+                    .discountPercentage(discount)
+                    .imageUrl(image)
+                    .stockQuantity(10 + (int)(Math.random() * 100))
+                    .sizeOptions(sizeList)
+                    .color(color)
+                    .rating(4.0 + (Math.random() * 1.0)) // 4.0 to 5.0
+                    .build();
+            products.add(p);
+        }
+        return products;
+    }
 
-        Product p10 = Product.builder()
-                .name("Kids Sneakers")
-                .brand("MiniTrends")
-                .description("Colorful and durable sneakers for active kids.")
-                .category("Shoes")
-                .gender("Kids")
-                .price(34.99)
-                .discountPercentage(10.0)
-                .imageUrl("https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(150)
-                .sizeOptions(Arrays.asList("2Y", "3Y", "4Y", "5Y"))
-                .rating(4.6)
-                .build();
+    private void seedCartAndWishlist() {
+        User customer = userRepository.findByEmail("customer@auratrends.com").orElse(null);
+        if (customer == null) return;
 
-        Product p11 = Product.builder()
-                .name("Chino Pants")
-                .brand("UrbanEdge")
-                .description("Slim-fit chinos for a smart-casual look.")
-                .category("Pants")
-                .gender("Men")
-                .price(59.99)
-                .discountPercentage(20.0)
-                .imageUrl("https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(100)
-                .sizeOptions(Arrays.asList("30", "32", "34"))
-                .rating(4.3)
-                .build();
+        List<Product> allProducts = productRepository.findAll();
+        if (allProducts.size() < 5) return;
 
-        Product p12 = Product.builder()
-                .name("Women's Blouse")
-                .brand("Luxe")
-                .description("Elegant blouse perfect for office and outings.")
-                .category("Tops")
-                .gender("Women")
-                .price(44.99)
-                .discountPercentage(10.0)
-                .imageUrl("https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(90)
-                .sizeOptions(Arrays.asList("S", "M", "L"))
-                .rating(4.5)
-                .build();
+        // Add 2 items to Cart
+        CartItem c1 = CartItem.builder().user(customer).product(allProducts.get(0)).quantity(1).selectedSize("M").build();
+        CartItem c2 = CartItem.builder().user(customer).product(allProducts.get(1)).quantity(2).selectedSize("L").build();
+        cartItemRepository.saveAll(Arrays.asList(c1, c2));
 
-        Product p13 = Product.builder()
-                .name("Sunglasses - Aviator")
-                .brand("ShadeCraft")
-                .description("Classic aviator sunglasses with UV protection.")
-                .category("Accessories")
-                .gender("Unisex")
-                .price(29.99)
-                .discountPercentage(0.0)
-                .imageUrl("https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(300)
-                .sizeOptions(Arrays.asList("One Size"))
-                .rating(4.8)
-                .build();
-
-        Product p14 = Product.builder()
-                .name("Ethnic Kurti Set")
-                .brand("Aura Trends")
-                .description("Beautiful ethnic kurti set for festive occasions.")
-                .category("Ethnic Wear")
-                .gender("Women")
-                .price(69.99)
-                .discountPercentage(25.0)
-                .imageUrl("https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(70)
-                .sizeOptions(Arrays.asList("S", "M", "L", "XL"))
-                .rating(4.7)
-                .build();
-
-        Product p15 = Product.builder()
-                .name("Men's Formal Shoes")
-                .brand("ClassicStep")
-                .description("Polished formal shoes for office and events.")
-                .category("Shoes")
-                .gender("Men")
-                .price(109.99)
-                .discountPercentage(15.0)
-                .imageUrl("https://images.unsplash.com/photo-1614252369475-531eba835eb1?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(50)
-                .sizeOptions(Arrays.asList("8", "9", "10", "11"))
-                .rating(4.4)
-                .build();
-
-        Product p16 = Product.builder()
-                .name("Women's Heels")
-                .brand("GlamStep")
-                .description("Stylish block heels for parties and events.")
-                .category("Shoes")
-                .gender("Women")
-                .price(79.99)
-                .discountPercentage(20.0)
-                .imageUrl("https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(60)
-                .sizeOptions(Arrays.asList("6", "7", "8"))
-                .rating(4.6)
-                .build();
-
-        Product p17 = Product.builder()
-                .name("Backpack - Urban")
-                .brand("UrbanEdge")
-                .description("Spacious and durable urban backpack.")
-                .category("Accessories")
-                .gender("Unisex")
-                .price(54.99)
-                .discountPercentage(10.0)
-                .imageUrl("https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(80)
-                .sizeOptions(Arrays.asList("One Size"))
-                .rating(4.5)
-                .build();
-
-        Product p18 = Product.builder()
-                .name("Kids Party Dress")
-                .brand("MiniTrends")
-                .description("Adorable party dress for little ones.")
-                .category("Dresses")
-                .gender("Kids")
-                .price(39.99)
-                .discountPercentage(15.0)
-                .imageUrl("https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(100)
-                .sizeOptions(Arrays.asList("3Y", "4Y", "5Y", "6Y"))
-                .rating(4.8)
-                .build();
-
-        Product p19 = Product.builder()
-                .name("Wrist Watch - Classic")
-                .brand("TimeCraft")
-                .description("Elegant classic wrist watch with leather strap.")
-                .category("Accessories")
-                .gender("Men")
-                .price(199.99)
-                .discountPercentage(30.0)
-                .imageUrl("https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(25)
-                .sizeOptions(Arrays.asList("One Size"))
-                .rating(4.9)
-                .build();
-
-        Product p20 = Product.builder()
-                .name("Women's Joggers")
-                .brand("Aura Trends")
-                .description("Comfortable joggers for workouts and casual wear.")
-                .category("Pants")
-                .gender("Women")
-                .price(44.99)
-                .discountPercentage(10.0)
-                .imageUrl("https://images.unsplash.com/photo-1506629082955-511b1aa562c8?auto=format&fit=crop&w=800&q=80")
-                .stockQuantity(110)
-                .sizeOptions(Arrays.asList("S", "M", "L"))
-                .rating(4.4)
-                .build();
-
-        productRepository.saveAll(Arrays.asList(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10,
-                p11, p12, p13, p14, p15, p16, p17, p18, p19, p20));
+        // Add 3 items to Wishlist
+        WishlistItem w1 = WishlistItem.builder().user(customer).product(allProducts.get(2)).build();
+        WishlistItem w2 = WishlistItem.builder().user(customer).product(allProducts.get(3)).build();
+        WishlistItem w3 = WishlistItem.builder().user(customer).product(allProducts.get(4)).build();
+        wishlistItemRepository.saveAll(Arrays.asList(w1, w2, w3));
     }
 }

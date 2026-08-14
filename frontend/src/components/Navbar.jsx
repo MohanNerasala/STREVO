@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Heart, ShoppingBag, User, ChevronDown, Menu } from 'lucide-react';
+import { fetchApi } from '../utils/api';
+import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { cartItems, wishlistItems, isLoggedIn } = useCart();
 
-  // In a real app, you would fetch cart count and user state from Context/Redux
-  const cartCount = 0;
-  const isLoggedIn = !!localStorage.getItem('token');
+  const cartCount = cartItems ? cartItems.reduce((acc, item) => acc + item.quantity, 0) : 0;
+  const wishlistCount = wishlistItems ? wishlistItems.length : 0;
 
   return (
     <nav className="navbar">
@@ -15,21 +17,20 @@ const Navbar = () => {
       
       <div className="nav-center">
         <div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
-          <Link to="/collections?category=New">NEW DROPS</Link>
+          <Link to="/collections?category=New Drops">NEW DROPS</Link>
           
           <div className="nav-dropdown">
             <Link to="/collections" style={{ display: 'flex', alignItems: 'center' }}>
               COLLECTIONS <ChevronDown size={14} style={{ marginLeft: '4px' }} />
             </Link>
             <div className="dropdown-content">
-              <Link to="/collections?category=Hoodies">Oversized Hoodies</Link>
-              <Link to="/collections?category=Tees">Graphic Tees</Link>
-              <Link to="/collections?category=Cargos">Cargo Pants</Link>
-              <Link to="/collections?category=Denim">Baggy Denim</Link>
-              <Link to="/collections?category=Jackets">Varsity Jackets</Link>
-              <Link to="/collections?category=Sets">Co-ord Sets</Link>
-              <Link to="/collections?category=Techwear">Techwear</Link>
-              <Link to="/collections?category=Skatewear">Skatewear</Link>
+              <Link to="/collections?category=New Drops">New Drops</Link>
+              <Link to="/collections?category=Hoodies">Hoodies</Link>
+              <Link to="/collections?category=Tees">Tees</Link>
+              <Link to="/collections?category=Cargos">Cargos</Link>
+              <Link to="/collections?category=Denim">Denim</Link>
+              <Link to="/collections?category=Sneakers">Sneakers</Link>
+              <Link to="/collections?category=Sale">Sale</Link>
             </div>
           </div>
           
@@ -38,7 +39,7 @@ const Navbar = () => {
           <Link to="/collections?category=Cargos">CARGOS</Link>
           <Link to="/collections?category=Denim">DENIM</Link>
           <Link to="/collections?category=Sneakers">SNEAKERS</Link>
-          <Link to="/collections?sale=true" className="sale-link">SALE</Link>
+          <Link to="/collections?category=Sale" className="sale-link">SALE</Link>
         </div>
       </div>
       
@@ -48,8 +49,11 @@ const Navbar = () => {
           <input type="text" placeholder="Search for products..." />
         </div>
         <div className="nav-icons">
-          <Link to="#" title="Wishlist"><Heart size={20} /></Link>
-          <Link to="/cart" title="Cart">
+          <Link to="/wishlist" title="Wishlist" style={{ position: 'relative' }}>
+            <Heart size={20} />
+            {wishlistCount > 0 && <span className="cart-count">{wishlistCount}</span>}
+          </Link>
+          <Link to="/cart" title="Cart" style={{ position: 'relative' }}>
             <ShoppingBag size={20} />
             {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
           </Link>

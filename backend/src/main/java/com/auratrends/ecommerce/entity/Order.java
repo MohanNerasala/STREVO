@@ -22,16 +22,25 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User user;
 
     @Column(nullable = false)
     private Double totalAmount;
+    
+    private Double taxAmount;
+    private Double deliveryFee;
 
     private String status;
     private String paymentMethod;
     private String paymentStatus;
+    
+    private String cancellationReason;
+    private LocalDateTime estimatedDeliveryDate;
+    
+    private Integer rating;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "shipping_address_id")
     private Address shippingAddress;
 

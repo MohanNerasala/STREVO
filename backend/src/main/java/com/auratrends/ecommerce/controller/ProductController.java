@@ -21,6 +21,13 @@ public class ProductController {
         return productRepository.findAll();
     }
 
+    @GetMapping("/debug-db")
+    public String debugDb() {
+        long count = productRepository.count();
+        List<Product> all = productRepository.findAll();
+        return "Count: " + count + ", FindAll size: " + all.size();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable UUID id) {
         return productRepository.findById(id)

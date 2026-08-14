@@ -35,6 +35,9 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private com.auratrends.ecommerce.security.UserDetailsServiceImpl userDetailsService;
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -44,9 +47,10 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         String jwt = jwtUtil.generateToken(userDetails);
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
         User user = userDetails.getUser();
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getFullName(), user.getEmail(), user.getRole().name()));
+        return ResponseEntity.ok(new AuthResponse(jwt, refreshToken, user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), user.getAvatarUrl()));
     }
 
     @PostMapping("/register")
@@ -69,9 +73,33 @@ public class AuthController {
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        
         String jwt = jwtUtil.generateToken(userDetails);
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getFullName(), user.getEmail(), user.getRole().name()));
+        return ResponseEntity.ok(new AuthResponse(jwt, refreshToken, user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), user.getAvatarUrl()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody com.auratrends.ecommerce.dto.RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+        
+        try {
+            String username = jwtUtil.extractUsername(refreshToken);
+            org.springframework.security.core.userdetails.UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            
+            if (jwtUtil.validateToken(refreshToken, userDetails)) {
+                String newJwt = jwtUtil.generateToken(userDetails);
+                String newRefreshToken = jwtUtil.generateRefreshToken(userDetails); // Optionally rotate refresh token too
+                
+                User user = ((UserDetailsImpl) userDetails).getUser();
+                return ResponseEntity.ok(new AuthResponse(newJwt, newRefreshToken, user.getId(), user.getFullName(), user.getEmail(), user.getRole().name(), user.getAvatarUrl()));
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid Refresh Token");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token expired or invalid");
+        }
     }
 
     @GetMapping("/me")

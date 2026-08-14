@@ -1,0 +1,107 @@
+.cart-custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  background-color: transparent;
+}
+
+.cart-custom-checkbox:checked {
+  background-color: #000;
+  border-color: #000;
+}
+
+.cart-custom-checkbox:checked::after {
+  content: '\2714';
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.cart-custom-checkbox:hover {
+  border-color: #000;
+}
+
+.cart-item-size-btn {
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  color: #000;
+  border: 1px solid #bbb;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 8px;
+}
+
+.cart-item-size-btn:hover {
+  border-color: #000;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+}
+
+.cart-item-size-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.cart-item-size-btn.selected {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+  font-weight: 700;
+}
+
+.cart-premium-qty {
+  display: flex;
+  align-items: center;
+  border: 1px solid #bbb;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.cart-premium-qty:hover {
+  border-color: #000;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.cart-premium-qty-btn {
+  width: 35px;
+  height: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.cart-premium-qty-btn:hover {
+  background: #f0f0f0;
+}
+
+.cart-premium-qty-btn:active {
+  transform: scale(0.9);
+}
+
+.cart-premium-qty-val {
+  width: 30px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+}

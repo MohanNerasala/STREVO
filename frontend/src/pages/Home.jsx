@@ -1,19 +1,93 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import ProductSection from '../components/ProductSection';
 import baggyImage from '../assets/baggy.avif';
+import { fetchApi } from '../utils/api';
+
+const TypewriterText = ({ text, delayOffset = 0 }) => {
+  return (
+    <span style={{ display: 'inline-block' }}>
+      {text.split('').map((char, index) => (
+        <span 
+          key={index}
+          className="typewriter-char"
+          style={{
+            animationDelay: `${delayOffset + index * 0.04}s`,
+            whiteSpace: char === ' ' ? 'pre' : 'normal'
+          }}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
+  );
+};
 
 const Home = () => {
+  const [trending, setTrending] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [bestSellers, setBestSellers] = useState([]);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const trendingData = await fetchApi('/api/products/category/Trending');
+        setTrending(trendingData.slice(0, 5)); // Show max 5 items in the section
+        
+        const newData = await fetchApi('/api/products/category/New');
+        setNewArrivals(newData.slice(0, 5));
+        
+        const bestData = await fetchApi('/api/products/category/BestSellers');
+        setBestSellers(bestData.slice(0, 5));
+      } catch (error) {
+        console.error("Failed to load products", error);
+      }
+    };
+    
+    loadProducts();
+  }, []);
+
   return (
     <>
       <Navbar />
       
       {/* Hero Section */}
+      <style>{`
+        .typewriter-char {
+          display: inline-block;
+          opacity: 0;
+          animation: letterReveal 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes letterReveal {
+          0% { opacity: 0; transform: translateY(20px) rotate(5deg); }
+          100% { opacity: 1; transform: translateY(0) rotate(0); }
+        }
+        .hero-subtitle {
+          opacity: 0;
+          animation: fadeUp 0.8s ease forwards;
+          animation-delay: 1.5s;
+        }
+        .hero-btns-animated {
+          opacity: 0;
+          animation: fadeUp 0.8s ease forwards;
+          animation-delay: 1.8s;
+        }
+        @keyframes fadeUp {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
       <header className="hero">
         <div className="hero-content">
-          <h1>STREETWEAR BUILT<br/><span className="text-brand-red">FOR THE NOW</span></h1>
-          <p>Best collection & limited drops.</p>
-          <div className="hero-btns">
+          <h1>
+            <span style={{ display: 'block' }}><TypewriterText text="STREETWEAR BUILT" delayOffset={0.2} /></span>
+            <span className="text-brand-red" style={{ display: 'block', marginTop: '0.1em' }}>
+              <TypewriterText text="FOR THE NOW" delayOffset={0.2 + (16 * 0.04)} />
+            </span>
+          </h1>
+          <p className="hero-subtitle">Best collection & limited drops.</p>
+          <div className="hero-btns hero-btns-animated">
             <Link to="/collections?category=New" className="btn btn-primary">Shop New Drops</Link>
             <Link to="/collections" className="btn btn-outline">Explore Collections</Link>
           </div>
@@ -84,64 +158,35 @@ const Home = () => {
         </div>
       </section>
       
-      {/* New Arrivals Preview */}
-      <section className="section" style={{ backgroundColor: '#f5f5f5' }}>
-        <h2 className="section-title">Latest Drops</h2>
-        <div className="product-grid">
-          {/* Static placeholders for now, in a full app these would be fetched via API */}
-          <div className="product-card">
-            <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop" alt="Heavyweight Boxy Hoodie" className="product-image" />
-            <div className="product-info">
-              <div className="product-brand">STREVO</div>
-              <h3 className="product-title">Heavyweight Boxy Hoodie</h3>
-              <div className="product-price-row">
-                <span className="final-price">₹2,499</span>
-              </div>
-              <button className="add-to-cart-btn">ADD TO CART</button>
-            </div>
-          </div>
-          
-          <div className="product-card">
-            <img src="https://images.unsplash.com/photo-1621335829175-95f437384d7c?q=80&w=600&auto=format&fit=crop" alt="Washed Oversized Graphic Tee" className="product-image" />
-            <div className="product-info">
-              <div className="product-brand">STREVO</div>
-              <h3 className="product-title">Washed Oversized Graphic Tee</h3>
-              <div className="product-price-row">
-                <span className="final-price">₹1,299</span>
-                <span className="original-price">₹1,799</span>
-                <span className="discount-badge">-27%</span>
-              </div>
-              <button className="add-to-cart-btn">ADD TO CART</button>
-            </div>
-          </div>
-          
-          <div className="product-card">
-            <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop" alt="Tactical Multi-Pocket Cargos" className="product-image" />
-            <div className="product-info">
-              <div className="product-brand">STREVO</div>
-              <h3 className="product-title">Tactical Multi-Pocket Cargos</h3>
-              <div className="product-price-row">
-                <span className="final-price">₹2,899</span>
-              </div>
-              <button className="add-to-cart-btn">ADD TO CART</button>
-            </div>
-          </div>
-          
-          <div className="product-card">
-            <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=600&auto=format&fit=crop" alt="Chunky Sole Sneakers" className="product-image" />
-            <div className="product-info">
-              <div className="product-brand">STREVO</div>
-              <h3 className="product-title">Chunky Sole Sneakers</h3>
-              <div className="product-price-row">
-                <span className="final-price">₹4,999</span>
-                <span className="original-price">₹5,999</span>
-                <span className="discount-badge">-16%</span>
-              </div>
-              <button className="add-to-cart-btn">ADD TO CART</button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Trending Now */}
+      {trending.length > 0 && (
+        <ProductSection 
+          title="Trending Now" 
+          linkText="View All Trending" 
+          linkTo="/collections?category=Trending" 
+          products={trending} 
+        />
+      )}
+
+      {/* New Arrivals */}
+      {newArrivals.length > 0 && (
+        <ProductSection 
+          title="New Arrivals" 
+          linkText="Shop New Drops" 
+          linkTo="/collections?category=New" 
+          products={newArrivals} 
+        />
+      )}
+
+      {/* Best Sellers */}
+      {bestSellers.length > 0 && (
+        <ProductSection 
+          title="Best Sellers" 
+          linkText="View Top Rated" 
+          linkTo="/collections?category=BestSellers" 
+          products={bestSellers} 
+        />
+      )}
     </>
   );
 };
