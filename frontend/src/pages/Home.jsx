@@ -12,7 +12,7 @@ const Home = () => {
       <header className="hero">
         <div className="hero-content">
           <h1>STREETWEAR BUILT<br/><span className="text-brand-red">FOR THE NOW</span></h1>
-          <p>Oversized fits, cargo layers, clean silhouettes, and limited men's drops.</p>
+          <p>Best collection & limited drops.</p>
           <div className="hero-btns">
             <Link to="/collections?category=New" className="btn btn-primary">Shop New Drops</Link>
             <Link to="/collections" className="btn btn-outline">Explore Collections</Link>
@@ -27,40 +27,60 @@ const Home = () => {
             <Link to="/collections" style={{fontWeight: 600, borderBottom: '1px solid #000'}}>View All</Link>
         </div>
         
-        <div className="category-bento">
-          <Link to="/collections?category=Hoodies" className="bento-item bento-large">
-            <div className="trending-badge">🔥 Most Popular</div>
-            <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop" alt="Hoodies" />
-            <div className="bento-overlay">
-              <h3>Heavyweight Hoodies</h3>
-              <p>Shop the staple</p>
-            </div>
-          </Link>
+        <div className="home-bento-grid">
           
-          <Link to="/collections?category=Tees" className="bento-item bento-medium">
-            <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800&auto=format&fit=crop" alt="Graphic Tees" />
-            <div className="bento-overlay">
-              <h3>Graphic Tees</h3>
-              <p>Just Dropped</p>
-            </div>
-          </Link>
-          
-          <Link to="/collections?category=Cargos" className="bento-item bento-small">
-            <img src={baggyImage} alt="Cargo Pants" />
-            <div className="bento-overlay">
-              <h3>Cargos</h3>
-              <p>Utility fits</p>
+          <Link to="/collections?category=New" className="bento-item bento-wide">
+            <div className="trending-badge" style={{background: 'black', color: 'white'}}>Dropping Now</div>
+            <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=800&auto=format&fit=crop" alt="New Drops" />
+            <div className="bento-overlay" style={{background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 70%)'}}>
+              <h3 style={{fontSize: '2rem'}}>NEW DROPS</h3>
             </div>
           </Link>
 
-          <Link to="/collections?category=Sneakers" className="bento-item bento-small">
-            <div className="trending-badge" style={{background: '#ff2a2a', color: 'white'}}>⚡ Trending</div>
-            <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=600&auto=format&fit=crop" alt="Sneakers" />
+          <Link to="/collections?category=Hoodies" className="bento-item bento-square">
+            <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop" alt="Hoodies" />
             <div className="bento-overlay">
-              <h3>Sneakers</h3>
-              <p>Hype footwear</p>
+              <h3 style={{fontSize: '2rem'}}>HOODIES</h3>
             </div>
           </Link>
+
+          <Link to="/collections?category=Tees" className="bento-item bento-square">
+            <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800&auto=format&fit=crop" alt="Tees" />
+            <div className="bento-overlay">
+              <h3 style={{fontSize: '2rem'}}>TEES</h3>
+            </div>
+          </Link>
+
+          <Link to="/collections?category=Cargos" className="bento-item bento-square">
+            <img src={baggyImage} alt="Cargos" />
+            <div className="bento-overlay">
+              <h3 style={{fontSize: '2rem'}}>CARGOS</h3>
+            </div>
+          </Link>
+
+          <Link to="/collections?category=Denim" className="bento-item bento-square">
+            <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=800&auto=format&fit=crop" alt="Denim" />
+            <div className="bento-overlay">
+              <h3 style={{fontSize: '2rem'}}>DENIM</h3>
+            </div>
+          </Link>
+
+          <Link to="/collections?category=Sneakers" className="bento-item bento-wide">
+            <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=800&auto=format&fit=crop" alt="Sneakers" />
+            <div className="bento-overlay">
+              <h3 style={{fontSize: '2rem'}}>SNEAKERS</h3>
+            </div>
+          </Link>
+
+          <Link to="/collections?sale=true" className="bento-item bento-full">
+            <div className="trending-badge" style={{background: '#ff2a2a', color: 'white'}}>Up to 50% Off</div>
+            <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=1600&auto=format&fit=crop" alt="Sale" />
+            <div className="bento-overlay" style={{background: 'linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%)', justifyContent: 'center', padding: '4rem'}}>
+              <h3 style={{fontSize: '4rem', color: '#ff2a2a'}}>ARCHIVE SALE</h3>
+              <p style={{fontSize: '1.2rem'}}>Last chance to cop</p>
+            </div>
+          </Link>
+          
         </div>
       </section>
       
