@@ -161,7 +161,7 @@ export const CartProvider = ({ children }) => {
 
     // Optimistic update
     setCartItems(prev => {
-      const existingIndex = prev.findIndex(item => item.product.id === productId);
+      const existingIndex = prev.findIndex(item => item.product.id === productId && item.selectedSize === selectedSize);
       if (existingIndex >= 0) {
         wasExisting = true;
         existingId = prev[existingIndex].id;
@@ -186,6 +186,7 @@ export const CartProvider = ({ children }) => {
           return prev.map(item => item.id === tempId ? newItem : item);
         }
       });
+      return newItem;
     } catch (error) {
       console.error("Failed to add to cart", error);
       await fetchCart(); // Revert to server state on failure

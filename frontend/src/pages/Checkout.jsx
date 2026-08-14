@@ -289,18 +289,34 @@ const Checkout = () => {
             <div className="checkout-summary">
               <div className="checkout-summary-card">
                 <h3>Order Summary</h3>
+                {items.length > 0 ? (
+                <div style={{ marginBottom: '1.5rem', marginTop: '1.5rem' }}>
+                  {items.map(item => (
+                    <div key={item.id} className="summary-row" style={{ fontSize: '0.9rem', color: '#333' }}>
+                      <span style={{ maxWidth: '70%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {item.quantity}x {item.product?.name}
+                      </span>
+                      <span>₹{((item.product?.finalPrice || item.product?.price || 0) * item.quantity).toLocaleString('en-IN')}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
                 <div className="summary-row">
-                  <span>Selected Items ({totalQty})</span>
+                  <span>Selected Items</span>
                   <span>₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="summary-row">
-                  <span>Tax Amount</span>
-                  <span>₹{tax.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="summary-row">
-                  <span>Delivery Charges (₹5/item)</span>
-                  <span>₹{delivery.toLocaleString('en-IN')}</span>
-                </div>
+              )}
+              
+              <div className="summary-divider" style={{ borderTop: '1px solid #eee', margin: '1rem 0' }}></div>
+              
+              <div className="summary-row" style={{ fontSize: '0.9rem', color: '#666' }}>
+                <span>Tax Amount</span>
+                <span>₹10</span>
+              </div>
+              <div className="summary-row" style={{ fontSize: '0.9rem', color: '#666' }}>
+                <span>Delivery Charges (₹5/item)</span>
+                <span>₹{delivery.toLocaleString('en-IN')}</span>
+              </div>
                 
                 <div className="summary-total">
                   <span>TOTAL</span>

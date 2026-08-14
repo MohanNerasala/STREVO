@@ -46,11 +46,15 @@ const Cart = () => {
   const hasMissingSizes = selectedCartItems.some(item => !item.selectedSize);
   const isCheckoutDisabled = selectedCartItems.length === 0 || hasMissingSizes;
 
+  const totalQuantity = selectedCartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+  
   const subtotal = selectedCartItems.reduce((acc, item) => {
-    return acc + ((item.product?.price || 0) * (item.quantity || 1));
+    return acc + ((item.product?.finalPrice || item.product?.price || 0) * (item.quantity || 1));
   }, 0);
-  const shipping = subtotal > 0 ? 150 : 0;
-  const total = subtotal + shipping;
+  
+  const taxAmount = selectedCartItems.length > 0 ? 10 : 0;
+  const deliveryFee = selectedCartItems.length > 0 ? totalQuantity * 5 : 0;
+  const total = subtotal + taxAmount + deliveryFee;
 
   const formatPrice = (amount) => `₹${amount.toLocaleString('en-IN')}`;
 
@@ -149,21 +153,35 @@ const Cart = () => {
 
             <div className="cart-summary-section">
               <div className="summary-card">
-                <h3>Order Summary</h3>
-                <div className="summary-row">
-                  <span>Selected Items</span>
-                  <span>{selectedCartItems.length}</span>
+                <h3 style={{ textTransform: 'uppercase', fontWeight: '800' }}>Order Summary</h3>
+                
+                {selectedCartItems.length > 0 ? (
+                  <div style={{ marginBottom: '1.5rem', marginTop: '1.5rem' }}>
+                    {selectedCartItems.map(item => (
+                      <div key={item.id} className="summary-row" style={{ fontSize: '0.9rem', color: '#333' }}>
+                        <span style={{ maxWidth: '70%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {item.quantity}x {item.product?.name}
+                        </span>
+                        <span>{formatPrice((item.product?.finalPrice || item.product?.price || 0) * item.quantity)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem', marginTop: '1rem' }}>No items selected.</p>
+                )}
+
+                <div className="summary-divider"></div>
+
+                <div className="summary-row" style={{ fontSize: '0.9rem', color: '#666' }}>
+                  <span>Tax Amount</span>
+                  <span>{formatPrice(taxAmount)}</span>
                 </div>
-                <div className="summary-row">
-                  <span>Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
-                </div>
-                <div className="summary-row">
-                  <span>Shipping</span>
-                  <span>{formatPrice(shipping)}</span>
+                <div className="summary-row" style={{ fontSize: '0.9rem', color: '#666' }}>
+                  <span>Delivery Charges (₹5/item)</span>
+                  <span>{formatPrice(deliveryFee)}</span>
                 </div>
                 <div className="summary-divider"></div>
-                <div className="summary-row total-row">
+                <div className="summary-row total-row" style={{ fontSize: '1.3rem', fontWeight: '900', color: '#000' }}>
                   <span>Total</span>
                   <span>{formatPrice(total)}</span>
                 </div>

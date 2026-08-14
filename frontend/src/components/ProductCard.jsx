@@ -12,13 +12,14 @@ const ProductCard = ({ product }) => {
   const {
     id = 1,
     name = "Product Name",
-    price = 999,
-    originalPrice,
-    image = "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop",
+    imageUrl = "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop",
     rating = 4.5,
     reviews = 120,
     badge
   } = product;
+
+  const currentPrice = product.finalPrice || product.price || 999;
+  const displayOriginalPrice = (product.discountPercentage && product.discountPercentage > 0) ? product.price : null;
 
   // Determine cart state from context
   const cartItem = cartItems.find(item => item.product.id === id);
@@ -109,7 +110,7 @@ const ProductCard = ({ product }) => {
           >
             <Heart size={18} fill={isLiked ? "#ff2a2a" : "none"} color={isLiked ? "#ff2a2a" : "currentColor"} />
           </button>
-          <img src={image} alt={name} className="card-image" loading="lazy" />
+          <img src={imageUrl} alt={name} className="card-image" loading="lazy" />
         </div>
       </Link>
       
@@ -125,9 +126,11 @@ const ProductCard = ({ product }) => {
         
         <div className="card-bottom">
           <div className="card-price-container">
-            <span className="current-price">{formatPrice(price)}</span>
-            {originalPrice && (
-              <span className="original-price">{formatPrice(originalPrice)}</span>
+            <span className="current-price">{formatPrice(currentPrice)}</span>
+            {displayOriginalPrice && (
+              <span className="original-price" style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.85em', marginLeft: '8px' }}>
+                {formatPrice(displayOriginalPrice)}
+              </span>
             )}
           </div>
         </div>

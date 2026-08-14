@@ -15,7 +15,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedSize, setSelectedSize] = useState('M');
   const [isAddingWishlist, setIsAddingWishlist] = useState(false);
   
   useEffect(() => {
@@ -143,8 +143,25 @@ const ProductDetail = () => {
       navigate('/login');
       return;
     }
-    await addToCart(id, 1, selectedSize);
-    navigate('/cart');
+    try {
+      const newItem = await addToCart(id, 1, selectedSize);
+      if (newItem) {
+        const itemPrice = newItem.product.finalPrice || newItem.product.price;
+        const qty = newItem.quantity || 1;
+        const calcSubtotal = itemPrice * qty;
+        const calcShipping = 5 * qty;
+        navigate('/checkout', { 
+          state: { 
+            items: [newItem], 
+            subtotal: calcSubtotal, 
+            shipping: calcShipping, 
+            total: calcSubtotal + calcShipping 
+          } 
+        });
+      }
+    } catch (e) {
+      console.error("Failed to buy now", e);
+    }
   };
 
   return (
